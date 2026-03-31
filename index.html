@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResumeForge — Professional Resume Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       PROGRESS BAR
+  ═══════════════════════════════════════ -->
+  <div class="progress-bar" id="progressBar" style="width:0%"></div>
+
+  <!-- ═══════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════ -->
+  <header>
+    <div class="logo">Resume<span>Forge</span></div>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="clearForm()">🗑 Clear</button>
+      <button class="btn btn-outline" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-primary" onclick="openDownloadModal()">⬇ Download PDF</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════
+       MAIN APP LAYOUT
+  ═══════════════════════════════════════ -->
+  <div class="app">
+
+    <!-- ─────────────────────────────────────
+         LEFT SIDEBAR — FORM EDITOR
+    ───────────────────────────────────── -->
+    <div class="sidebar">
+
+      <!-- Tab Navigation -->
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" onclick="switchTab('info', this)">Info</button>
+        <button class="tab-btn" onclick="switchTab('experience', this)">Experience</button>
+        <button class="tab-btn" onclick="switchTab('extras', this)">Extras</button>
+        <button class="tab-btn" onclick="switchTab('design', this)">Design</button>
+      </div>
+
+      <!-- ── TAB: INFO ── -->
+      <div class="tab-content active" id="tab-info">
+
+        <div class="section-header"><span class="section-icon">👤</span> Personal Info</div>
+
+        <label>Full Name *</label>
+        <input type="text" id="name" placeholder="John Doe" oninput="updateResume()">
+
+        <label>Professional Title</label>
+        <input type="text" id="title" placeholder="Senior Software Engineer" oninput="updateResume()">
+
+        <label>Professional Summary</label>
+        <textarea id="summary" placeholder="Brief 2-3 sentence summary highlighting your expertise and goals..." oninput="updateResume()"></textarea>
+
+        <div class="section-header"><span class="section-icon">📬</span> Contact</div>
+
+        <label>Email *</label>
+        <input type="email" id="email" placeholder="john@example.com" oninput="updateResume()">
+
+        <label>Phone</label>
+        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" oninput="updateResume()">
+
+        <label>Location</label>
+        <input type="text" id="location" placeholder="San Francisco, CA" oninput="updateResume()">
+
+        <label>Website / Portfolio</label>
+        <input type="url" id="website" placeholder="https://johndoe.dev" oninput="updateResume()">
+
+        <div class="section-header"><span class="section-icon">🔗</span> Profiles</div>
+
+        <label>LinkedIn URL</label>
+        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/johndoe" oninput="updateResume()">
+
+        <label>GitHub URL</label>
+        <input type="url" id="github" placeholder="https://github.com/johndoe" oninput="updateResume()">
+
+        <label>Other Profile (Twitter / Behance / etc.)</label>
+        <input type="url" id="other_profile" placeholder="https://..." oninput="updateResume()">
+
+        <div class="section-header"><span class="section-icon">🖼</span> Photo</div>
+
+        <div class="photo-upload-area" id="photoArea">
+          <input type="file" accept="image/*" onchange="handlePhoto(event)">
+          <div id="photoPlaceholder">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Click to upload photo<br><small>JPG, PNG — max 5MB</small></div>
+          </div>
+          <img id="photoPreview" class="photo-preview" style="display:none" alt="Preview">
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="removePhoto()">Remove Photo</button>
+
+        <div class="section-header"><span class="section-icon">💡</span> Skills</div>
+        <div class="skill-tags" id="skillTags"></div>
+        <div class="skill-input-row">
+          <input type="text" id="skillInput" placeholder="Add a skill (e.g. Python)" onkeydown="addSkillOnEnter(event)">
+          <button class="btn btn-secondary btn-sm" onclick="addSkill()">Add</button>
+        </div>
+
+      </div><!-- /tab-info -->
+
+      <!-- ── TAB: EXPERIENCE ── -->
+      <div class="tab-content" id="tab-experience">
+
+        <div class="section-header"><span class="section-icon">💼</span> Work Experience</div>
+        <div id="expList"></div>
+        <button class="add-btn" onclick="addExp()">+ Add Work Experience</button>
+
+        <div class="section-header"><span class="section-icon">🎓</span> Education</div>
+        <div id="eduList"></div>
+        <button class="add-btn" onclick="addEdu()">+ Add Education</button>
+
+        <div class="section-header"><span class="section-icon">🚀</span> Projects</div>
+        <div id="projList"></div>
+        <button class="add-btn" onclick="addProj()">+ Add Project</button>
+
+      </div><!-- /tab-experience -->
+
+      <!-- ── TAB: EXTRAS ── -->
+      <div class="tab-content" id="tab-extras">
+
+        <div class="section-header"><span class="section-icon">🏆</span> Certifications</div>
+        <div id="certList"></div>
+        <button class="add-btn" onclick="addCert()">+ Add Certification</button>
+
+        <div class="section-header"><span class="section-icon">⭐</span> Achievements</div>
+        <div id="achList"></div>
+        <button class="add-btn" onclick="addAch()">+ Add Achievement</button>
+
+        <div class="section-header"><span class="section-icon">🌐</span> Languages</div>
+        <div id="langList"></div>
+        <button class="add-btn" onclick="addLang()">+ Add Language</button>
+
+        <div class="section-header"><span class="section-icon">🎨</span> Hobbies / Interests</div>
+        <textarea id="hobbies" placeholder="e.g. Open source contribution, photography, chess..." oninput="updateResume()"></textarea>
+
+      </div><!-- /tab-extras -->
+
+      <!-- ── TAB: DESIGN ── -->
+      <div class="tab-content" id="tab-design">
+
+        <div class="section-header"><span class="section-icon">🎨</span> Template</div>
+
+        <!-- Photo Toggle -->
+        <div class="photo-toggle">
+          <label class="toggle">
+            <input type="checkbox" id="showPhotoToggle" onchange="updateResume()" checked>
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-label">Show Photo in Resume</span>
+        </div>
+
+        <!-- Template Cards -->
+        <div class="template-grid">
+
+          <!-- Classic Elegance -->
+          <div class="template-card selected" onclick="selectTemplate('classic', this)">
+            <div class="template-thumb">
+              <div class="thumb-classic">
+                <div class="thumb-circle"></div>
+                <div style="flex:1">
+                  <div style="height:7px;background:rgba(255,255,255,.6);border-radius:2px;margin-bottom:3px"></div>
+                  <div style="height:4px;background:rgba(255,255,255,.3);border-radius:2px;width:60%"></div>
+                </div>
+              </div>
+              <div style="display:flex;flex:1">
+                <div class="thumb-classic-side">
+                  <div class="thumb-line" style="margin-bottom:3px"></div>
+                  <div class="thumb-line-sm" style="margin-bottom:6px"></div>
+                  <div class="thumb-line" style="margin-bottom:3px"></div>
+                  <div class="thumb-line-xs"></div>
+                </div>
+                <div class="thumb-classic-main">
+                  <div class="thumb-line" style="margin-bottom:3px"></div>
+                  <div class="thumb-line-sm" style="margin-bottom:3px"></div>
+                  <div class="thumb-line-xs" style="margin-bottom:6px"></div>
+                  <div class="thumb-line" style="margin-bottom:3px"></div>
+                  <div class="thumb-line-sm"></div>
+                </div>
+              </div>
+            </div>
+            <div class="template-name">Classic Elegance</div>
+            <div class="selected-badge">✓</div>
+          </div>
+
+          <!-- Modern Split -->
+          <div class="template-card" onclick="selectTemplate('modern', this)">
+            <div class="template-thumb" style="background:#fff">
+              <div class="thumb-modern">
+                <div style="height:7px;background:rgba(255,255,255,.7);border-radius:2px;margin-bottom:3px"></div>
+                <div style="height:4px;background:rgba(255,255,255,.4);border-radius:2px;width:60%"></div>
+              </div>
+              <div style="display:flex;flex:1;padding:4px 6px;flex-direction:column;gap:3px">
+                <div class="thumb-line"></div>
+                <div class="thumb-line-sm"></div>
+                <div class="thumb-line-xs"></div>
+                <div class="thumb-line"></div>
+                <div class="thumb-line-sm"></div>
+              </div>
+            </div>
+            <div class="template-name">Modern Split</div>
+            <div class="selected-badge">✓</div>
+          </div>
+
+          <!-- Minimal Pro -->
+          <div class="template-card" onclick="selectTemplate('minimal', this)">
+            <div class="template-thumb" style="background:#fff">
+              <div class="thumb-minimal-header">
+                <div style="height:8px;background:#000;border-radius:2px;width:50%;margin-bottom:4px"></div>
+                <div style="height:3px;background:#aaa;border-radius:2px;width:30%"></div>
+              </div>
+              <div class="thumb-minimal-body" style="display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;gap:6px">
+                  <div style="width:25%;font-size:4px;color:#aaa;padding-top:1px">SECTION</div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;border-left:2px solid #eee;padding-left:4px">
+                    <div class="thumb-line"></div>
+                    <div class="thumb-line-sm"></div>
+                    <div class="thumb-line-xs"></div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <div style="width:25%;font-size:4px;color:#aaa;padding-top:1px">SECTION</div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;border-left:2px solid #eee;padding-left:4px">
+                    <div class="thumb-line"></div>
+                    <div class="thumb-line-sm"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="template-name">Minimal Pro</div>
+            <div class="selected-badge">✓</div>
+          </div>
+
+          <!-- Bold Executive -->
+          <div class="template-card" onclick="selectTemplate('bold', this)">
+            <div class="template-thumb" style="background:#fff">
+              <div class="thumb-bold-header">
+                <div class="thumb-bold-sidebar"></div>
+                <div style="flex:1;padding:6px 8px;display:flex;flex-direction:column;justify-content:center;gap:3px">
+                  <div style="height:7px;background:rgba(255,255,255,.6);border-radius:2px;width:70%"></div>
+                  <div style="height:3px;background:rgba(255,255,255,.3);border-radius:2px;width:45%"></div>
+                </div>
+              </div>
+              <div class="thumb-bold-body">
+                <div class="thumb-line"></div>
+                <div class="thumb-line-sm"></div>
+                <div class="thumb-line-xs"></div>
+                <div class="thumb-line"></div>
+                <div class="thumb-line-sm"></div>
+              </div>
+            </div>
+            <div class="template-name">Bold Executive</div>
+            <div class="selected-badge">✓</div>
+          </div>
+
+        </div><!-- /template-grid -->
+      </div><!-- /tab-design -->
+
+    </div><!-- /sidebar -->
+
+    <!-- ─────────────────────────────────────
+         RIGHT PANEL — LIVE PREVIEW
+    ───────────────────────────────────── -->
+    <div class="preview-panel">
+      <div class="preview-toolbar">
+        <span>📄 Live Preview</span>
+        <button class="zoom-btn" onclick="changeZoom(-0.1)" title="Zoom Out">−</button>
+        <button class="zoom-btn" onclick="changeZoom(0.1)" title="Zoom In">+</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">⊡</button>
+        <button class="btn btn-primary btn-sm" onclick="openDownloadModal()">⬇ Download</button>
+      </div>
+      <div class="resume-wrapper" id="resumeWrapper">
+        <div class="resume-page" id="resumeOutput"></div>
+      </div>
+    </div>
+
+  </div><!-- /app -->
+
+  <!-- ═══════════════════════════════════════
+       DOWNLOAD MODAL
+  ═══════════════════════════════════════ -->
+  <div class="download-modal" id="downloadModal" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-title">Download Your Resume</div>
+      <div class="modal-desc">Use your browser's Print dialog to save as PDF. Select "Save as PDF" as the destination for a perfect A4 export.</div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="printResume()">🖨 Open Print / Save as PDF</button>
+        <button class="btn btn-outline" onclick="closeDownloadModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
